@@ -76,7 +76,14 @@ type Client struct {
 
 // GraphQL Send a GraphQL operation request
 func (client *Client) GraphQL(ctx context.Context, query string, variables map[string]interface{}) (map[string]interface{}, error) {
+	var respData map[string]interface{}
+	if err := client.Run(ctx, query, variables, &respData); err != nil {
+		return nil, err
+	}
+	return respData, nil
+}
 
+func (client *Client) Run(ctx context.Context, query string, variables map[string]interface{}, resp interface{}) error {
 	req := graphql.NewRequest(query)
 
 	if client.Secret != "" {
@@ -87,11 +94,10 @@ func (client *Client) GraphQL(ctx context.Context, query string, variables map[s
 		req.Var(key, value)
 	}
 
-	var respData map[string]interface{}
-	if err := client.GQLClient.Run(ctx, req, &respData); err != nil {
-		return nil, err
+	if err := client.GQLClient.Run(ctx, req, &resp); err != nil {
+		return err
 	}
-	return respData, nil
+	return nil
 }
 
 func (client *Client) ProcessInstructions(stack []instruction) string {
