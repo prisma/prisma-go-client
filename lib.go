@@ -104,6 +104,9 @@ func (client *Client) ProcessInstructions(stack []instruction) string {
 	// walk it forwards and construct the AST?
 	for i := len(stack) - 1; i >= 0; i-- {
 		instruction := stack[i]
+		for j, arg := range instruction.Args {
+			instruction.Args[j].Name = fmt.Sprintf("%s_%s", instruction.Name, arg.Name)
+		}
 		if len(query) == 0 {
 			query[instruction.Name] = instruction.Field.TypeFields
 			argsByInstruction[instruction.Name] = instruction.Args

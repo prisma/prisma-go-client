@@ -2,6 +2,7 @@ package prisma
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	"github.com/mitchellh/mapstructure"
@@ -47,7 +48,7 @@ func (exec *Exec) buildQuery() (string, map[string]interface{}) {
 				}
 			}
 			allArgs = append(allArgs, *arg)
-			variables[arg.Name] = arg.Value
+			variables[fmt.Sprintf("%s_%s", instruction.Name, arg.Name)] = arg.Value
 		}
 	}
 	query := exec.Client.ProcessInstructions(exec.Stack)
